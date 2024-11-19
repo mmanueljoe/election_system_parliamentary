@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+
+body {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+h1, h3 {
+    color: #007BFF;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 10px 0;
+}
+
+
+.navbar, .navbar-brand {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+h1, h3 {
+    color: #007BFF;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+
+/* Fine-tune logout button alignment */
+.nav-item form {
+    margin: 0;
+    display: inline;
+}
+
+.nav-item form .nav-link {
+    padding: 0;
+    line-height: 1.5;
+}
+
+/* Add hover effect for logout button */
+.nav-item form .nav-link:hover {
+    color: #dc3545; /* Bootstrap Danger Color */
+    text-decoration: underline;
+}
+
+
+/* Center the container and adjust form responsiveness */
+.container-login {
+    max-width: 100%;
+    padding: 20px;
+}
+
+/* Card styling with square borders and larger size */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px; /* Square corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Input field styling */
+.form-control {
+    height: 50px;
+    border-radius: 0; /* Remove rounded corners for square look */
+    border: 1px solid #ccc;
+}
+
+
+
+/* Login button styling */
+.btn-block {
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 0; /* Square corners */
+}
+
+/* Styling for the "Go to Admin Login" link */
+.admin-link {
+    color: #007bff;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid #007bff;
+    padding: 5px 10px;
+    display: inline-block;
+    border-radius: 0; /* Square corners */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect for the "Go to Admin Login" link */
+.admin-link:hover {
+    background-color: #007bff;
+    color: #ffffff;
+    text-decoration: none;
+    transform: scale(1.05); /* Slight zoom effect */
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .card {
+        padding: 20px;
+    }
+    .form-control {
+        font-size: 14px;
+    }
+    .btn-block {
+        font-size: 14px;
+    }
+}

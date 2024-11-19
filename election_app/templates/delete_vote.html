@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-danger mb-3 text-center">Delete Vote</h2>
+        <p class="text-center text-muted">
+            Are you sure you want to delete the vote for 
+            <span class="font-weight-bold text-dark">{{ vote.candidate.name }}</span> 
+            at 
+            <span class="font-weight-bold text-dark">{{ vote.polling_station.name }}</span>?
+        </p>
+        <div class="d-flex justify-content-center mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg px-4">Yes, Delete</button>
+            </form>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg px-4">Cancel</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+    .btn-danger {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-danger:hover {
+        background-color: #c82333;
+        transform: scale(1.05);
+    }
+    .btn-secondary {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

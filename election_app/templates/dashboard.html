@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Dashboard</h2>
+    <div class="card shadow p-4">
+        <canvas id="voteChart"></canvas>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow p-3">
+                <i class="fas fa-poll-h fa-2x text-primary"></i>
+                <p class="mt-2 mb-0"><strong>Total Polling Stations</strong></p>
+                <h4>{{ total_polling_stations }}</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow p-3">
+                <i class="fas fa-users fa-2x text-success"></i>
+                <p class="mt-2 mb-0"><strong>Total Registered Voters</strong></p>
+                <h4>{{ total_registered_voters }}</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow p-3">
+                <i class="fas fa-times-circle fa-2x text-danger"></i>
+                <p class="mt-2 mb-0"><strong>Total Rejected Ballots</strong></p>
+                <h4>{{ total_rejected_ballots }}</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow p-3">
+                <i class="fas fa-percentage fa-2x text-warning"></i>
+                <p class="mt-2 mb-0"><strong>Percentage</strong></p>
+                <h4>{{ percentage }}%</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Parse JSON data for the chart
+        var voteData = JSON.parse('{{ vote_data|escapejs }}');
+
+        // X-axis labels (candidate names)
+        var labels = voteData.map(data => {
+            const logo = data.party_logo ? `<img src="${data.party_logo}" alt="Logo" style="width:20px; height:20px;">` : '';
+            return `${logo} ${data.candidate_name}`;
+        });
+        
+        // Votes for Y-axis
+        var data = voteData.map(data => data.total_votes);
+
+        // Alternating colors for the bars
+        var backgroundColors = voteData.map((_, index) =>
+            index % 2 === 0 ? 'rgba(54, 162, 235, 0.6)' : 'rgba(255, 99, 132, 0.6)'
+        );
+        var borderColors = voteData.map((_, index) =>
+            index % 2 === 0 ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)'
+        );
+
+        var ctx = document.getElementById('voteChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: voteData.map(data => data.candidate_name),
+                datasets: [{
+                    label: 'Total Votes',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                let dataPoint = voteData[tooltipItem.dataIndex];
+                                return `${dataPoint.candidate_name} (${dataPoint.party_name}) - ${tooltipItem.raw} votes`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f0f0f0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+{% include 'footer.html' %}
+{% endblock %}

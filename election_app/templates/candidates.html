@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <h2>Candidate List</h2>
+    <a href="{% url 'add_candidate' %}" class="btn btn-primary mb-3">Add New Candidate</a>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Picture</th>
+                <th>Name</th>
+                <th>Party</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for candidate in candidates %}
+            <tr>
+                <td>
+                    {% if candidate.picture %}
+                        <img src="{{ candidate.picture.url }}" alt="{{ candidate.name }}" 
+                             style="width: 50px; height: 50px; object-fit: cover;" class="img-thumbnail">
+                    {% else %}
+                        <span>No Image</span>
+                    {% endif %}
+                </td>
+                <td>{{ candidate.name }}</td>
+                <td>{{ candidate.party.name }}</td>
+                <td>
+                    <!-- Edit Candidate and Delete Candidate buttons -->
+                    <a href="{% url 'edit_candidate' candidate.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{% url 'delete_candidate' candidate.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

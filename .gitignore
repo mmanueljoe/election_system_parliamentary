@@ -1,0 +1,57 @@
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Django stuff:
+*.log
+db.sqlite3
+/media/
+*.pot
+*.py[co]
+*.sqlite3
+
+# Static files
+/staticfiles/
+/static/
+
+# Uploaded media
+/media/
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+env/
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS-specific files
+.DS_Store
+
+# Node modules (if applicable)
+node_modules/
+
+# Testing and coverage
+.coverage
+*.cover
+.tox/
+.nox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.egg-info/
+pip-log.txt
+
+# Build and deploy artifacts
+dist/
+build/
+
+# PyInstaller
+*.spec

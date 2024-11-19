@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+{%include 'navbar.html'%}
+<div class="container mt-4">
+    <h2>Polling Stations</h2>
+    <a href="{% url 'add_polling_station' %}" class="btn btn-primary mb-3">Add New Polling Station</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Constituency</th>
+                <th>Registered Voters</th>
+                <th>Rejected Ballots</th>
+                <th>Declared</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station in polling_stations %}
+            <tr>
+                <td>{{ station.name }}</td>
+                <td>{{ station.constituency.name }}</td>
+                <td>{{ station.registered_voters }}</td>
+                <td>{{ station.rejected_ballots }}</td>
+                <td>{{ station.declared }}</td>
+                <td>
+                    <a href="{% url 'edit_polling_station' station.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{% url 'delete_polling_station' station.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No polling stations available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

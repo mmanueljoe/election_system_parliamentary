@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 font-weight-bold">Welcome to {{ constituency.name }}</h1>
+        <p class="lead text-muted">
+            Efficient and secure election management for {{ constituency.name }} Constituency.
+        </p>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row text-center">
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Polling Stations</h5>
+                    <p class="card-text display-4 text-primary">{{ total_polling_stations }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Registered Voters</h5>
+                    <p class="card-text display-4 text-success">{{ total_registered_voters }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Votes Cast</h5>
+                    <p class="card-text display-4 text-info">{{ total_votes_cast }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Rejected Ballots</h5>
+                    <p class="card-text display-4 text-danger">{{ rejected_ballots }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voter Turnout Section -->
+    <div class="text-center mt-5">
+        <h3 class="font-weight-bold">Voter Turnout</h3>
+        <p class="lead display-4 text-warning">{{ voter_turnout_percentage }}%</p>
+    </div>
+
+    <!-- Call-to-Action Section -->
+    <div class="mt-5 text-center">
+        <p class="lead">Manage elections seamlessly and track real-time results.</p>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+    </div>
+</div>
+
+<!-- Scoped Styles -->
+<style>
+    .landing-stat-card {
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .landing-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .lead {
+        font-size: 1.25rem;
+    }
+</style>
+{% endblock %}

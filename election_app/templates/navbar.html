@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand font-weight-bold text-primary" href="{% url 'landing_page' %}">
+            <i class="fas fa-vote-yea"></i>Election System
+        </a>
+
+        
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto align-items-center">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'dashboard' %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+
+                <!-- Candidates -->
+                <li class="nav-item">
+                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'candidate_list' %}">
+                        <i class="fas fa-users"></i> Candidates
+                    </a>
+                </li>
+
+                <!-- Polling Stations -->
+                <li class="nav-item">
+                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'polling_station_list' %}">
+                        <i class="fas fa-map-marker-alt"></i> Polling Stations
+                    </a>
+                </li>
+
+                <!-- Votes -->
+                <li class="nav-item">
+                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'vote_list' %}">
+                        <i class="fas fa-chart-bar"></i> Votes
+                    </a>
+                </li>
+
+                <!-- Constituency -->
+                <li class="nav-item">
+                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'constituency_list' %}">
+                        <i class="fas fa-landmark"></i> Constituency
+                    </a>
+                </li>
+
+                <!-- Logout -->
+                <li class="nav-item">
+                    <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link text-danger hover-effect ml-3 p-0" style="padding: 0; margin: 0;">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hover effects -->
+<style>
+    .hover-effect {
+        transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+    .hover-effect:hover {
+        color: #007bff !important; /* Bootstrap's primary color */
+        transform: scale(1.1);
+    }
+</style>

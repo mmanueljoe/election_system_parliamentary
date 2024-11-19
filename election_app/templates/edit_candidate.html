@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-5">
+    <h2>Edit Candidate</h2>
+    <form method="POST" enctype="multipart/form-data" class="border p-4 rounded shadow-sm bg-light">
+        {% csrf_token %}
+        
+        <div class="form-group mb-4">
+            <label for="{{ form.name.id_for_label }}" class="font-weight-bold">Candidate Name</label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-group mb-4">
+            <label for="{{ form.party.id_for_label }}" class="font-weight-bold">Party</label>
+            {{ form.party }}
+        </div>
+
+        <div class="form-group mb-4">
+            <label for="{{ form.picture.id_for_label }}" class="font-weight-bold">Candidate Picture</label>
+            {{ form.picture }}
+            {% if candidate.picture %}
+            <div class="mt-2">
+                <img src="{{ candidate.picture.url }}" alt="{{ candidate.name }}" style="width: 150px; height: 150px; object-fit: cover;" class="img-thumbnail">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-4">
+            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

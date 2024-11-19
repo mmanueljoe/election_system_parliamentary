@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-5">
+    <h2 class="mb-4">Add New Constituency</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Constituency Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Enter constituency name" required>
+        </div>
+        <div class="form-group">
+            <label for="region">Region</label>
+            <select id="region" name="region" class="form-control" required>
+                <option value="" selected disabled>Select region</option>
+                {% for region in regions %}
+                <option value="{{ region.id }}">{{ region.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Add Constituency</button>
+        <a href="{% url 'constituency_list' %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+</div>
+{% include 'footer.html' %}
+{% endblock %}

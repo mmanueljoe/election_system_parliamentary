@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Regions</h2>
+    <a href="{% url 'add_region' %}" class="btn btn-primary mb-3">Add Region</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for region in regions %}
+            <tr>
+                <td>{{ region.name }}</td>
+                <td>
+                    <a href="{% url 'edit_region' region.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'delete_region' region.id %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

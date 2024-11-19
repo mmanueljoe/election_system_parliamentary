@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Edit Region</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Region Name:</label>
+            <input type="text" name="name" id="name" value="{{ region.name }}" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Update</button>
+    </form>
+</div>
+{% endblock %}
