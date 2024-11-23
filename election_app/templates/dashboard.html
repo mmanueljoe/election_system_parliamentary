@@ -1,76 +1,109 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
+
 <div class="container mt-5">
     <h2 class="text-center mb-4">Dashboard</h2>
-    <div class="card shadow p-4">
+
+    <!-- Chart -->
+    <div class="card shadow p-4 mb-5">
         <canvas id="voteChart"></canvas>
     </div>
 
-    <div class="row mt-5">
+    <!-- Statistics -->
+    <div class="row">
+        <!-- Total Polling Stations -->
         <div class="col-md-3 mb-3">
-            <div class="card text-center shadow p-3">
+            <div class="card text-center shadow p-3 stat-card">
                 <i class="fas fa-poll-h fa-2x text-primary"></i>
                 <p class="mt-2 mb-0"><strong>Total Polling Stations</strong></p>
-                <h4>{{ total_polling_stations }}</h4>
+                <h4 class="count" data-count="{{ total_polling_stations }}">0</h4>
             </div>
         </div>
+
+        <!-- Total Registered Voters -->
         <div class="col-md-3 mb-3">
-            <div class="card text-center shadow p-3">
+            <div class="card text-center shadow p-3 stat-card">
                 <i class="fas fa-users fa-2x text-success"></i>
                 <p class="mt-2 mb-0"><strong>Total Registered Voters</strong></p>
-                <h4>{{ total_registered_voters }}</h4>
+                <h4 class="count" data-count="{{ total_registered_voters }}">0</h4>
             </div>
         </div>
+
+        <!-- Total Votes Cast -->
         <div class="col-md-3 mb-3">
-            <div class="card text-center shadow p-3">
+            <div class="card text-center shadow p-3 stat-card">
+                <i class="fas fa-check-circle fa-2x text-info"></i>
+                <p class="mt-2 mb-0"><strong>Total Votes Cast</strong></p>
+                <h4 class="count" data-count="{{ total_votes_cast }}">0</h4>
+            </div>
+        </div>
+
+        <!-- Total Rejected Ballots -->
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow p-3 stat-card">
                 <i class="fas fa-times-circle fa-2x text-danger"></i>
                 <p class="mt-2 mb-0"><strong>Total Rejected Ballots</strong></p>
-                <h4>{{ total_rejected_ballots }}</h4>
+                <h4 class="count" data-count="{{ total_rejected_ballots }}">0</h4>
             </div>
         </div>
+
+        <!-- Total Overvotes -->
         <div class="col-md-3 mb-3">
-            <div class="card text-center shadow p-3">
-                <i class="fas fa-percentage fa-2x text-warning"></i>
-                <p class="mt-2 mb-0"><strong>Percentage</strong></p>
-                <h4>{{ percentage }}%</h4>
+            <div class="card text-center shadow p-3 stat-card">
+                <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                <p class="mt-2 mb-0"><strong>Total Overvotes</strong></p>
+                <h4 class="count" data-count="{{ total_overvotes }}">0</h4>
+            </div>
+        </div>
+
+        <!-- Voter Turnout Percentage -->
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow p-3 stat-card">
+                <i class="fas fa-percentage fa-2x text-secondary"></i>
+                <p class="mt-2 mb-0"><strong>Voter Turnout (%)</strong></p>
+                <h4 class="count" data-count="{{ percentage }}">0%</h4>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Count Animation -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Parse JSON data for the chart
-        var voteData = JSON.parse('{{ vote_data|escapejs }}');
+        // Animate the count for each statistic
+        const counters = document.querySelectorAll('.count');
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
 
-        // X-axis labels (candidate names)
-        var labels = voteData.map(data => {
-            const logo = data.party_logo ? `<img src="${data.party_logo}" alt="Logo" style="width:20px; height:20px;">` : '';
-            return `${logo} ${data.candidate_name}`;
+                const increment = target / 100; // Adjust speed here
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 10);
+                } else {
+                    counter.innerText = target; // Final value
+                }
+            };
+            updateCount();
         });
-        
-        // Votes for Y-axis
-        var data = voteData.map(data => data.total_votes);
 
-        // Alternating colors for the bars
-        var backgroundColors = voteData.map((_, index) =>
-            index % 2 === 0 ? 'rgba(54, 162, 235, 0.6)' : 'rgba(255, 99, 132, 0.6)'
-        );
-        var borderColors = voteData.map((_, index) =>
-            index % 2 === 0 ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)'
-        );
+        // Chart
+        const voteData = JSON.parse('{{ vote_data|escapejs }}');
+        const labels = voteData.map(data => data.candidate_name);
+        const data = voteData.map(data => data.total_votes);
+        const ctx = document.getElementById('voteChart').getContext('2d');
 
-        var ctx = document.getElementById('voteChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: voteData.map(data => data.candidate_name),
+                labels: labels,
                 datasets: [{
                     label: 'Total Votes',
                     data: data,
-                    backgroundColor: backgroundColors,
-                    borderColor: borderColors,
+                    backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
                     borderWidth: 1
                 }]
             },
@@ -79,30 +112,30 @@
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: function (tooltipItem) {
-                                let dataPoint = voteData[tooltipItem.dataIndex];
-                                return `${dataPoint.candidate_name} (${dataPoint.party_name}) - ${tooltipItem.raw} votes`;
+                            label: tooltipItem => {
+                                const candidate = voteData[tooltipItem.dataIndex];
+                                return `${candidate.candidate_name} (${candidate.party_name}): ${tooltipItem.raw} votes`;
                             }
                         }
                     }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f0f0f0'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
                 }
             }
         });
     });
 </script>
+
+<!-- CSS for Hover Effect -->
+<style>
+    .stat-card:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
 
 {% include 'footer.html' %}
 {% endblock %}

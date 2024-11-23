@@ -1,28 +1,32 @@
 import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Candidate, Vote, PollingStation, Constituency, Party,Region
+from .models import Candidate, Vote, PollingStation, Constituency, Party,Region,Candidate, Vote
 from .forms import CandidateForm, PollingStationForm, VoteForm
 from django.contrib.messages import get_messages
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.models import User
+from django.shortcuts import render
+from django.db import IntegrityError
+from django.db.models import Sum, Count
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
-# from .forms import LoginForm  # Create a form for login if needed
+from django.urls import reverse
+import json
+from . import models  # Import your models from the app
+
 
 
 @login_required
 def landing_page(request):
-    # Fetch the currently logged-in user's constituency from the session
     constituency_code = request.session.get('constituency_code')
     if not constituency_code:
         return redirect('login')
 
-    # Get the constituency details
-    constituency = get_object_or_404(Constituency, name=constituency_code)
-
-    # Fetch polling stations and votes related to the constituency
+    constituency = get_object_or_404(Constituency, code=constituency_code)
     polling_stations = PollingStation.objects.filter(constituency=constituency)
     votes = Vote.objects.filter(polling_station__in=polling_stations)
 
@@ -31,36 +35,43 @@ def landing_page(request):
     total_registered_voters = sum(ps.registered_voters for ps in polling_stations)
     total_votes_cast = sum(v.votes for v in votes)
     rejected_ballots = sum(ps.rejected_ballots for ps in polling_stations)
+    overvotes = max(0, total_votes_cast - total_registered_voters)
 
-    # Handle percentage calculation
-    voter_turnout_percentage = (
-        (total_votes_cast / total_registered_voters) * 100 if total_registered_voters > 0 else 0
-    )
+    # Voter turnout percentage calculation
+    voter_turnout_percentage = (total_votes_cast / total_registered_voters) * 100 if total_registered_voters else 0
 
-    # Context for the template
+    # Additional statistics (you can add more as needed)
+    total_parties = len(set(candidate.party.name for candidate in Candidate.objects.all()))
+
     context = {
         'constituency': constituency,
         'total_polling_stations': total_polling_stations,
         'total_registered_voters': total_registered_voters,
         'total_votes_cast': total_votes_cast,
         'rejected_ballots': rejected_ballots,
+        'overvotes': overvotes,
         'voter_turnout_percentage': round(voter_turnout_percentage, 2),
+        'total_parties': total_parties,  # New stat for parties
     }
-
     return render(request, 'landing_page.html', context)
 
 
 def login_view(request):
     if request.method == 'POST':
-        constituency_code = request.POST.get('constituency_code')
+        constituency_code = request.POST.get('constituency_code')  # Use constituency code from form input
         try:
-            constituency = Constituency.objects.get(name=constituency_code)
+            # Validate constituency code
+            constituency = Constituency.objects.get(code=constituency_code)  
+            # Authenticate user using constituency code as the username
             user, created = User.objects.get_or_create(username=constituency_code)
-            login(request, user)
-            request.session['constituency_code'] = constituency_code
-            return redirect('dashboard')
+            if created:
+                user.set_unusable_password()  # Optional: Ensure user cannot log in with a password
+                user.save()
+            login(request, user)  # Log in the user
+            request.session['constituency_code'] = constituency_code  # Store constituency code in session
+            return redirect('dashboard')  # Redirect to the dashboard after successful login
         except Constituency.DoesNotExist:
-            messages.error(request, "Invalid Constituency Code")
+            messages.error(request, "Invalid Constituency Code")  # Display error if code is invalid
             return redirect('login')
 
     # Clear leftover messages when rendering the login page
@@ -68,7 +79,9 @@ def login_view(request):
     for _ in storage:
         pass
 
-    return render(request, 'login.html')
+    return render(request, 'login.html')  # Render the login page
+
+
 
 def logout_view(request):
     # Log the user out and clear the session
@@ -78,18 +91,24 @@ def logout_view(request):
     return redirect('login')
 
 @login_required
+@login_required
 def dashboard(request):
-    constituency_code = request.session.get('constituency_code')
+    constituency_code = request.session.get('constituency_code')  # Get constituency code from session
     if not constituency_code:
-        return redirect('login')
+        return redirect('login')  # Redirect to login if no constituency code
 
+    # Get the constituency using the code
+    constituency = get_object_or_404(Constituency, code=constituency_code)  # Filter by code, not name
+
+    # Filter candidates, polling stations, and votes within the constituency
     candidates = Candidate.objects.all()
-    votes = Vote.objects.all()
+    polling_stations = PollingStation.objects.filter(constituency=constituency)
+    votes = Vote.objects.filter(polling_station__in=polling_stations)
 
+    # Collect vote data for dashboard visualization
     vote_data = []
     for candidate in candidates:
-        candidate_votes = votes.filter(candidate=candidate)
-        total_votes = sum(vote.votes for vote in candidate_votes)
+        total_votes = votes.filter(candidate=candidate).aggregate(total=Sum('votes'))['total'] or 0
         vote_data.append({
             'candidate_name': candidate.name,
             'party_name': candidate.party.name,
@@ -97,21 +116,29 @@ def dashboard(request):
             'total_votes': total_votes
         })
 
-    total_polling_stations = PollingStation.objects.count()
-    total_registered_voters = sum(station.registered_voters for station in PollingStation.objects.all())
-    total_rejected_ballots = sum(station.rejected_ballots for station in PollingStation.objects.all())
-    total_votes_cast = sum(vote.votes for vote in votes)
+    # Calculate overall statistics
+    total_polling_stations = polling_stations.count()
+    total_registered_voters = sum(station.registered_voters for station in polling_stations)
+    total_votes_cast = sum(vote['total_votes'] for vote in vote_data)
+    total_rejected_ballots = sum(station.rejected_ballots for station in polling_stations)
 
+    # Calculate overvotes
+    total_overvotes = max(0, total_votes_cast - total_registered_voters)
+
+    # Calculate voter turnout percentage
     percentage = (total_votes_cast / total_registered_voters) * 100 if total_registered_voters else 0
 
     context = {
         'vote_data': json.dumps(vote_data),  # Convert vote data to JSON
         'total_polling_stations': total_polling_stations,
         'total_registered_voters': total_registered_voters,
+        'total_votes_cast': total_votes_cast,
         'total_rejected_ballots': total_rejected_ballots,
+        'total_overvotes': total_overvotes,
         'percentage': round(percentage, 2)
     }
     return render(request, 'dashboard.html', context)
+
 
 
 # Candidate logics
@@ -119,6 +146,7 @@ def dashboard(request):
 def candidate_list(request):
     candidates = Candidate.objects.all()
     return render(request, 'candidates.html', {'candidates': candidates})
+
 
 @login_required
 def add_candidate(request):
@@ -134,20 +162,30 @@ def add_candidate(request):
         else:
             messages.error(request, "There was an error adding the candidate.")
     else:
+        # Exclude parties already assigned to candidates
+        assigned_parties = Candidate.objects.values_list('party', flat=True)
         form = CandidateForm()
+        form.fields['party'].queryset = Party.objects.exclude(id__in=assigned_parties)
 
     return render(request, 'add_candidate.html', {'form': form})
+
 
 @login_required
 def edit_candidate(request, id):
     candidate = get_object_or_404(Candidate, id=id)  # Get the candidate object by ID
     if request.method == 'POST':
-        form = CandidateForm(request.POST, instance=candidate)
+        form = CandidateForm(request.POST, request.FILES, instance=candidate)
         if form.is_valid():
             form.save()
+            messages.success(request, f"Candidate '{candidate.name}' updated successfully!")
             return redirect('candidate_list')  # Redirect after saving
+        else:
+            messages.error(request, "There was an error updating the candidate.")
     else:
-        form = CandidateForm(instance=candidate)  # Prepopulate form with candidate data
+        form = CandidateForm(instance=candidate)
+        # Exclude parties already assigned to other candidates
+        assigned_parties = Candidate.objects.exclude(id=candidate.id).values_list('party', flat=True)
+        form.fields['party'].queryset = Party.objects.exclude(id__in=assigned_parties)
 
     return render(request, 'edit_candidate.html', {'form': form, 'candidate': candidate})
 
@@ -168,24 +206,26 @@ def polling_station_list(request):
     polling_stations = PollingStation.objects.select_related('constituency').all()
     return render(request, 'polling_station_list.html', {'polling_stations': polling_stations})
 
-@login_required
+
+
 @login_required
 def add_polling_station(request):
-    """
-    Handles adding a new polling station.
-    """
     if request.method == 'POST':
         form = PollingStationForm(request.POST)
         if form.is_valid():
-            form.save()  # Save the new polling station to the database
-            messages.success(request, "Polling station added successfully!")
-            return redirect('polling_station_list')  # Redirect to the polling stations list page
+            try:
+                form.save()
+                messages.success(request, "Polling station added successfully!")
+                return redirect('polling_station_list')
+            except IntegrityError:
+                messages.error(request, "An error occurred while saving. Please check your inputs.")
         else:
             messages.error(request, "There was an error adding the polling station.")
     else:
-        form = PollingStationForm()  # Display an empty form for GET requests
+        form = PollingStationForm()
 
     return render(request, 'add_polling_station.html', {'form': form})
+
 
 
 @login_required
@@ -195,7 +235,7 @@ def edit_polling_station(request, id):
     """
     polling_station = get_object_or_404(PollingStation, id=id)  # Fetch the polling station by ID
     if request.method == 'POST':
-        form = PollingStationForm(request.POST, instance=polling_station)  # Populate form with instance
+        form = PollingStationForm(request.POST, instance=polling_station)  # Pass instance to the form
         if form.is_valid():
             form.save()
             messages.success(request, f"Polling station '{polling_station.name}' updated successfully!")
@@ -206,6 +246,7 @@ def edit_polling_station(request, id):
         form = PollingStationForm(instance=polling_station)  # Prepopulate form with polling station data
 
     return render(request, 'edit_polling_station.html', {'form': form, 'polling_station': polling_station})
+
 
 @login_required
 def delete_polling_station(request, id):
@@ -365,3 +406,141 @@ def delete_vote(request, id):
         messages.success(request, "Vote deleted successfully.")
         return redirect('vote_list')
     return render(request, 'delete_vote.html', {'vote': vote})
+
+
+# logic error election report
+def election_report(request):
+    polling_stations = PollingStation.objects.all()
+    return render(request, 'election_report.html', {'polling_stations': polling_stations})
+
+
+
+
+# vote management logic
+
+
+@login_required
+def manage_votes(request):
+
+    constituency_code = request.session.get('constituency_code')
+    if not constituency_code:
+        return redirect('login')
+
+    # Get the list of polling stations based on the constituency code
+    polling_stations = PollingStation.objects.filter(constituency__code=constituency_code)
+    
+    # Get the polling station ID from the query parameter, handle invalid cases
+    polling_station_id = request.GET.get('polling_station_id')
+    polling_station = None
+    
+    if polling_station_id:
+        try:
+            polling_station = PollingStation.objects.get(id=polling_station_id)
+        except PollingStation.DoesNotExist:
+            messages.error(request, "Polling station not found.")
+            return redirect(reverse('manage_votes'))  # Redirect without query parameter
+    
+    # If no polling station is selected, show a message and don't display candidate data
+    if not polling_station:
+        messages.info(request, "Please select a polling station to manage votes.")
+    
+    # Get the list of candidates and their votes for the selected polling station
+    candidates = Candidate.objects.all()
+    candidate_votes = {}
+    
+    if polling_station:
+        # Prepopulate vote data by querying the Vote table
+        votes = Vote.objects.filter(polling_station=polling_station)
+        candidate_votes = {vote.candidate_id: vote.votes for vote in votes}
+    
+    print(json.dumps(candidate_votes, indent=4))  # Add this for debugging
+
+    # Handle form submission for saving or clearing votes
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'save':
+            # Ensure votes are entered for at least one candidate
+            if not any(request.POST.get(f'vote_{candidate.id}') for candidate in candidates):
+                messages.error(request, "Please enter votes for at least one candidate.")
+                return redirect(f'{reverse("manage_votes")}?polling_station_id={polling_station.id}')
+            
+            # Save or update votes
+            for candidate in candidates:
+                vote_count = request.POST.get(f'vote_{candidate.id}')
+                if vote_count:
+                    vote_count = int(vote_count)
+                    if vote_count < 0:
+                        messages.error(request, "Vote count cannot be negative.")
+                        return redirect(f'{reverse("manage_votes")}?polling_station_id={polling_station.id}')
+                    if vote_count > polling_station.registered_voters:
+                        messages.error(request, f"Vote count for {candidate.name} exceeds registered voters.")
+                        return redirect(f'{reverse("manage_votes")}?polling_station_id={polling_station.id}')
+                    
+                    # Update or create the vote record
+                    vote, created = Vote.objects.update_or_create(
+                        polling_station=polling_station,
+                        candidate=candidate,
+                        defaults={'votes': vote_count}
+                    )
+
+            # Save rejected ballots
+            rejected_ballots = request.POST.get('rejected_ballots')
+            if rejected_ballots is not None:
+                polling_station.rejected_ballots = int(rejected_ballots)
+                polling_station.save()
+
+            messages.success(request, "Votes successfully saved.")
+            return redirect(f'{reverse("manage_votes")}?polling_station_id={polling_station.id}')
+        elif action == 'clear':
+            # Clear votes for the selected polling station
+            for candidate in candidates:
+                Vote.objects.filter(polling_station=polling_station, candidate=candidate).delete()
+            messages.success(request, "Votes cleared successfully.")
+            return redirect(f'{reverse("manage_votes")}?polling_station_id={polling_station.id}')
+    
+    return render(request, 'manage_votes.html', {
+        'polling_stations': polling_stations, 
+        'polling_station': polling_station, 
+        'candidates': candidates,
+        'candidate_votes': candidate_votes,  # Pass pre-populated vote data
+    })
+
+
+
+@login_required
+def election_report(request):
+    constituency_code = request.session.get('constituency_code')
+    if not constituency_code:
+        return redirect('login')
+
+    # Fetch polling stations for the constituency
+    polling_stations = PollingStation.objects.filter(constituency__code=constituency_code)
+
+    report_data = []
+    for station in polling_stations:
+        # Get all votes for the polling station
+        votes = Vote.objects.filter(polling_station=station)
+        total_votes = sum(vote.votes for vote in votes)
+        parties = {}
+
+        # Collect party-wise vote data
+        for vote in votes:
+            party_name = vote.candidate.party.name
+            parties[party_name] = parties.get(party_name, 0) + vote.votes
+
+        # Calculate voter turnout
+        voter_turnout = (total_votes / station.registered_voters) * 100 if station.registered_voters > 0 else 0
+
+        # Append row data to the report
+        report_data.append({
+            'code': station.code,
+            'name': station.name,
+            'registered_voters': station.registered_voters,
+            'parties': parties,
+            'over_votes': station.over_votes,
+            'rejected_ballots': station.rejected_ballots,
+            'total_votes': total_votes,
+            'voter_turnout': f"{voter_turnout:.2f}%"
+        })
+
+    return render(request, 'election_report.html', {'report_data': report_data})

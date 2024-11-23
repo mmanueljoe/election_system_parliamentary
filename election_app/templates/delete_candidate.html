@@ -1,21 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header text-danger">
-            Confirm Deletion
-        </div>
-        <div class="card-body">
-            <p>Are you sure you want to delete <strong>{{ candidate.name }}</strong> from <strong>{{ candidate.party.name }}</strong>?</p>
-            {% if candidate.picture %}
-                <img src="{{ candidate.picture.url }}" alt="{{ candidate.name }}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
-            {% endif %}
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                <a href="{% url 'candidate_list' %}" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
+    <div class="animate__animated animate__zoomIn">
+        <h2 class="text-danger">Delete Candidate</h2>
+        <p>Are you sure you want to delete <strong>{{ candidate.name }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger animate__animated animate__heartBeat">Yes, Delete</button>
+            <a href="{% url 'candidate_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
 </div>
 {% endblock %}
+
+<style>
+    /* Smooth transitions for form inputs */
+form input, form select {
+    transition: all 0.3s ease;
+}
+
+form input:focus, form select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Button hover effects */
+button {
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Card appearance transition */
+.card {
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+</style>

@@ -3,15 +3,15 @@
 {% include 'navbar.html' %}
 
 <div class="container mt-5">
+    <!-- Header Section -->
     <div class="text-center mb-5">
         <h1 class="display-4 font-weight-bold">Welcome to {{ constituency.name }}</h1>
-        <p class="lead text-muted">
-            Efficient and secure election management for {{ constituency.name }} Constituency.
-        </p>
+        <p class="lead text-muted">Efficient and secure election management for {{ constituency.name }} Constituency.</p>
     </div>
 
     <!-- Statistics Section -->
     <div class="row text-center">
+        <!-- Polling Stations Card -->
         <div class="col-md-3 mb-4">
             <div class="card landing-stat-card shadow-sm">
                 <div class="card-body">
@@ -20,6 +20,8 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Registered Voters Card -->
         <div class="col-md-3 mb-4">
             <div class="card landing-stat-card shadow-sm">
                 <div class="card-body">
@@ -28,6 +30,8 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Votes Cast Card -->
         <div class="col-md-3 mb-4">
             <div class="card landing-stat-card shadow-sm">
                 <div class="card-body">
@@ -36,6 +40,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Rejected Ballots Card -->
         <div class="col-md-3 mb-4">
             <div class="card landing-stat-card shadow-sm">
                 <div class="card-body">
@@ -46,10 +52,37 @@
         </div>
     </div>
 
-    <!-- Voter Turnout Section -->
-    <div class="text-center mt-5">
-        <h3 class="font-weight-bold">Voter Turnout</h3>
-        <p class="lead display-4 text-warning">{{ voter_turnout_percentage }}%</p>
+    <!-- Additional Statistics Section -->
+    <div class="row text-center">
+        <!-- Overvotes Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Overvotes</h5>
+                    <p class="card-text display-4 text-warning">{{ overvotes }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voter Turnout Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Voter Turnout</h5>
+                    <p class="card-text display-4 text-success">{{ voter_turnout_percentage }}%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Parties Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card landing-stat-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title font-weight-bold">Total Parties</h5>
+                    <p class="card-text display-4 text-info">{{ total_parties }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Call-to-Action Section -->
@@ -64,6 +97,7 @@
     .landing-stat-card {
         border: none;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: #f9f9f9;
     }
 
     .landing-stat-card:hover {
@@ -73,10 +107,30 @@
 
     .display-4 {
         font-size: 2.5rem;
+        font-weight: bold;
     }
 
     .lead {
         font-size: 1.25rem;
+        font-weight: 300;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        color: #333;
+    }
+
+    .btn-primary {
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
     }
 </style>
+{%include 'footer.html'%}
 {% endblock %}

@@ -1,34 +1,64 @@
 {% extends 'base.html' %}
 {% block content %}
-{% include 'navbar.html' %}
 <div class="container mt-5">
-    <h2>Edit Candidate</h2>
-    <form method="POST" enctype="multipart/form-data" class="border p-4 rounded shadow-sm bg-light">
-        {% csrf_token %}
-        
-        <div class="form-group mb-4">
-            <label for="{{ form.name.id_for_label }}" class="font-weight-bold">Candidate Name</label>
-            {{ form.name }}
+    {% if messages %}
+    <div class="mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        <div class="form-group mb-4">
-            <label for="{{ form.party.id_for_label }}" class="font-weight-bold">Party</label>
-            {{ form.party }}
+    <h2 class="mb-4 animate__animated animate__fadeInDown">Edit Candidate</h2>
+    <div class="card shadow animate__animated animate__fadeInUp">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    {{ form.as_p }}
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary animate__animated animate__pulse animate__infinite">Save Changes</button>
+                    <a href="{% url 'candidate_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
         </div>
-
-        <div class="form-group mb-4">
-            <label for="{{ form.picture.id_for_label }}" class="font-weight-bold">Candidate Picture</label>
-            {{ form.picture }}
-            {% if candidate.picture %}
-            <div class="mt-2">
-                <img src="{{ candidate.picture.url }}" alt="{{ candidate.name }}" style="width: 150px; height: 150px; object-fit: cover;" class="img-thumbnail">
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="form-group mb-4">
-            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
+
+
+<style>
+    /* Smooth transitions for form inputs */
+form input, form select {
+    transition: all 0.3s ease;
+}
+
+form input:focus, form select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Button hover effects */
+button {
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Card appearance transition */
+.card {
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+</style>

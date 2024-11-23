@@ -7,6 +7,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Code</th> <!-- New column for code -->
                 <th>Name</th>
                 <th>Constituency</th>
                 <th>Registered Voters</th>
@@ -18,22 +19,24 @@
         <tbody>
             {% for station in polling_stations %}
             <tr>
+                <td>{{ station.code }}</td> <!-- Display the polling station code -->
                 <td>{{ station.name }}</td>
                 <td>{{ station.constituency.name }}</td>
                 <td>{{ station.registered_voters }}</td>
                 <td>{{ station.rejected_ballots }}</td>
                 <td>{{ station.declared }}</td>
                 <td>
-                    <a href="{% url 'edit_polling_station' station.id %}" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="{% url 'delete_polling_station' station.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="{% url 'edit_polling_station' station.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    <form action="{% url 'delete_polling_station' station.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
                 </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6">No polling stations available.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+{%include 'footer.html'%}
 {% endblock %}
+

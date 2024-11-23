@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-4">
+    <h2>Election Report</h2>
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Polling Station Code</th>
+                <th>Polling Station Name</th>
+                <th>Eligible Voters</th>
+                {% for party in report_data.0.parties.keys %}
+                    <th>{{ party }}</th>
+                {% endfor %}
+                <th>Over Voting</th>
+                <th>Rejected Ballots</th>
+                <th>Total Vote Cast</th>
+                <th>Voter Turnout</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in report_data %}
+            <tr>
+                <td>{{ row.code }}</td>
+                <td>{{ row.name }}</td>
+                <td>{{ row.registered_voters }}</td>
+                {% for votes in row.parties.values %}
+                    <td>{{ votes }}</td>
+                {% endfor %}
+                <td>{{ row.over_votes }}</td>
+                <td>{{ row.rejected_ballots }}</td>
+                <td>{{ row.total_votes }}</td>
+                <td>{{ row.voter_turnout }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table thead th {
+        background-color: #343a40;
+        color: white;
+    }
+</style>
+{%include 'footer.html'%}
+{% endblock %}

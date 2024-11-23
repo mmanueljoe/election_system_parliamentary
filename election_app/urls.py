@@ -36,6 +36,13 @@ urlpatterns = [
     path('constituencies/edit/<int:id>',views.edit_constituency,name="edit_constituency"),
     path('consituencies/delete/<int:id>',views.delete_constituency,name="delete_constituency"),
 
+    # advanced vote management
+    path('manage_votes/', views.manage_votes, name='manage_votes'),
+    
+
+    # Election Report
+    path('election_report/', views.election_report, name='election_report'),
+    
     # Authentication
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
