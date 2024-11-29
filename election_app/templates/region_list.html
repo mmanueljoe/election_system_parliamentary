@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{%include 'navbar.html'%}
 <div class="container mt-4">
     <h2>Regions</h2>
     <a href="{% url 'add_region' %}" class="btn btn-primary mb-3">Add Region</a>
@@ -24,4 +24,5 @@
         </tbody>
     </table>
 </div>
+{%include 'footer.html'%}
 {% endblock %}

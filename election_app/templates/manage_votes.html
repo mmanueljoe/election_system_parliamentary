@@ -95,7 +95,7 @@
     </div>
 </div>
 
-<script>
+<!-- <script>
     function updateVotes(input, maxVotes) {
         let value = parseInt(input.value);
         let totalVotesCast = 0;
@@ -122,6 +122,49 @@
         document.getElementById('over-votes').classList.toggle('text-danger', overVotes > 0);
         document.getElementById('total-votes-cast').classList.toggle('text-success', totalVotesCast > 0);
     }
+</script> -->
+
+
+<script>
+    function updateVotes(input, maxVotes) {
+        let totalVotesCast = 0;
+        let overVotes = 0;
+
+        // Calculate the sum of all candidate votes
+        document.querySelectorAll('.vote-input').forEach(function (input) {
+            totalVotesCast += parseInt(input.value) || 0;
+        });
+
+        // Add the rejected ballots to the total vote count
+        let rejectedBallotsInput = document.getElementById('rejected_ballots');
+        let rejectedBallots = parseInt(rejectedBallotsInput.value) || 0;
+        totalVotesCast += rejectedBallots;
+
+        // Calculate overvotes
+        overVotes = totalVotesCast > maxVotes ? totalVotesCast - maxVotes : 0;
+
+        // Update the displayed values
+        document.getElementById('total-votes-cast').textContent = totalVotesCast;
+        document.getElementById('over-votes').textContent = overVotes;
+
+        // Update the color based on overvotes
+        document.getElementById('over-votes').classList.toggle('text-danger', overVotes > 0);
+        document.getElementById('total-votes-cast').classList.toggle('text-success', totalVotesCast > 0);
+    }
+
+    // Attach the updateVotes function to the rejected ballots input
+    document.getElementById('rejected_ballots').addEventListener('input', function () {
+        let maxVotes = parseInt('{{ polling_station.registered_voters }}') || 0;
+        updateVotes(this, maxVotes);
+    });
+
+    // Attach the updateVotes function to all candidate vote inputs
+    document.querySelectorAll('.vote-input').forEach(function (input) {
+        input.addEventListener('input', function () {
+            let maxVotes = parseInt('{{ polling_station.registered_voters }}') || 0;
+            updateVotes(this, maxVotes);
+        });
+    });
 </script>
 
 <style>

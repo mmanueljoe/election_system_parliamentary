@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{%include 'navbar.html'%}
 <div class="container mt-4">
     <h2>Delete Region</h2>
     <p>Are you sure you want to delete the region <strong>{{ region.name }}</strong>?</p>
@@ -10,4 +10,5 @@
         <a href="{% url 'region_list' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+{%include 'footer.html'%}
 {% endblock %}

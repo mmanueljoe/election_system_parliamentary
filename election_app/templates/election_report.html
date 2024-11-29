@@ -1,51 +1,110 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html' %}
-<div class="container mt-4">
-    <h2>Election Report</h2>
-    <table class="table table-bordered table-hover mt-4">
-        <thead class="table-dark">
-            <tr>
-                <th>Polling Station Code</th>
-                <th>Polling Station Name</th>
-                <th>Eligible Voters</th>
-                {% for party in report_data.0.parties.keys %}
-                    <th>{{ party }}</th>
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="display-5 font-weight-bold text-primary">Election Report</h2>
+        <p class="text-muted">Detailed breakdown of polling station data and voter turnout.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Polling Station Code</th>
+                    <th>Polling Station Name</th>
+                    <th>Eligible Voters</th>
+                    {% for party in report_data.0.parties.keys %}
+                        <th>{{ party }}</th>
+                    {% endfor %}
+                    <th class="text-danger">Overvotes</th>
+                    <th class="text-warning">Rejected Ballots</th>
+                    <th class="text-success">Total Votes Cast</th>
+                    <th class="text-info">Voter Turnout (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report_data %}
+                <tr>
+                    <td>{{ row.code }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.registered_voters }}</td>
+                    {% for votes in row.parties.values %}
+                        <td>{{ votes }}</td>
+                    {% endfor %}
+                    <td class="text-danger">{{ row.over_votes }}</td>
+                    <td class="text-warning">{{ row.rejected_ballots }}</td>
+                    <td class="text-success">{{ row.total_votes }}</td>
+                    <td class="text-info">
+                        {% if row.registered_voters > 0 %}
+                            {{ row.voter_turnout }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
-                <th>Over Voting</th>
-                <th>Rejected Ballots</th>
-                <th>Total Vote Cast</th>
-                <th>Voter Turnout</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in report_data %}
-            <tr>
-                <td>{{ row.code }}</td>
-                <td>{{ row.name }}</td>
-                <td>{{ row.registered_voters }}</td>
-                {% for votes in row.parties.values %}
-                    <td>{{ votes }}</td>
-                {% endfor %}
-                <td>{{ row.over_votes }}</td>
-                <td>{{ row.rejected_ballots }}</td>
-                <td>{{ row.total_votes }}</td>
-                <td>{{ row.voter_turnout }}</td>
-            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if report_data.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ report_data.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in report_data.paginator.page_range %}
+                {% if report_data.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
             {% endfor %}
-        </tbody>
-    </table>
+
+            {% if report_data.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ report_data.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 
+<!-- Scoped Styles -->
 <style>
-    .table th, .table td {
-        text-align: center;
-        vertical-align: middle;
+    .pagination .page-link {
+        color: #007bff;
     }
-    .table thead th {
-        background-color: #343a40;
-        color: white;
+
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
     }
 </style>
-{%include 'footer.html'%}
+{% include 'footer.html' %}
 {% endblock %}

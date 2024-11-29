@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{%include 'navbar.html'%}
 <div class="container mt-4">
     <h2>Edit Region</h2>
     <form method="post">
@@ -12,4 +12,5 @@
         <button type="submit" class="btn btn-success mt-2">Update</button>
     </form>
 </div>
+{%include 'footer.html'%}
 {% endblock %}

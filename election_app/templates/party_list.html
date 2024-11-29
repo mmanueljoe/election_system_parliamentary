@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="display-5 font-weight-bold">Party List</h2>
+        <a href="{% url 'party_create' %}" class="btn btn-primary mb-3">Create Party</a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Name</th>
+                    <th>Logo</th>
+                    <!-- <th>Description</th> -->
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for party in parties %}
+                <tr>
+                    <td>{{ party.name }}</td>
+                    <td><img src="{{ party.logo.url }}" alt="{{ party.name }} logo" width="50"></td>
+                    <td>{{ party.description }}</td>
+                    <td>
+                        <a href="{% url 'party_update' party.id %}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{% url 'party_delete' party.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{%include 'navbar.html'%}
 <div class="container mt-5">
     <div class="animate__animated animate__zoomIn">
         <h2 class="text-danger">Delete Candidate</h2>
@@ -11,6 +12,7 @@
         </form>
     </div>
 </div>
+{%include 'footer.html'%}
 {% endblock %}
 
 <style>

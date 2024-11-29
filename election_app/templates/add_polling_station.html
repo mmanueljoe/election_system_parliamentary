@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{%include 'navbar.html'%}
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -45,4 +45,6 @@
         </div>
     </div>
 </div>
+{%include 'footer.html'%}
 {% endblock %}
+

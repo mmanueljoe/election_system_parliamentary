@@ -5,7 +5,6 @@
             <i class="fas fa-vote-yea"></i>Election System
         </a>
 
-        
         <!-- Toggler -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -28,49 +27,43 @@
                     </a>
                 </li>
 
-                <!-- Polling Stations -->
+                <!-- Manage Votes -->
                 <li class="nav-item">
-                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'polling_station_list' %}">
-                        <i class="fas fa-map-marker-alt"></i> Polling Stations
-                    </a>
-                </li>
-
-                <!-- Votes -->
-                <li class="nav-item">
-                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'vote_list' %}">
-                        <i class="fas fa-chart-bar"></i> Votes
-                    </a>
-                </li>
-
-                 <!-- Manage Votes -->
-                 <li class="nav-item">
                     <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'manage_votes' %}">
-                        <i class="fas fa-chart-bar"></i> Manage Votes
+                        <i class="fas fa-tasks"></i> Manage Votes
                     </a>
                 </li>
 
-                <!-- Election report -->
-                <li class="nav-item">
-                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'election_report' %}">
-                        <i class="fas fa-chart-bar"></i> Election Report
+                <!-- Dropdown for Other Links -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-secondary hover-effect ml-3" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-h"></i> More
                     </a>
-                </li>
-
-                <!-- Constituency -->
-                <li class="nav-item">
-                    <a class="nav-link text-secondary hover-effect ml-3" href="{% url 'constituency_list' %}">
-                        <i class="fas fa-landmark"></i> Constituency
-                    </a>
-                </li>
-
-                <!-- Logout -->
-                <li class="nav-item">
-                    <form method="POST" action="{% url 'logout' %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link btn btn-link text-danger hover-effect ml-3 p-0" style="padding: 0; margin: 0;">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <!-- Polling Stations -->
+                        <a class="dropdown-item text-secondary hover-effect" href="{% url 'polling_station_list' %}">
+                            <i class="fas fa-map-marker-alt"></i> Polling Stations
+                        </a>
+                        <!-- Votes -->
+                        <a class="dropdown-item text-secondary hover-effect" href="{% url 'party_list' %}">
+                            <i class="fas fa-vote-yea"></i> Party
+                        </a>
+                        <!-- Election Report -->
+                        <a class="dropdown-item text-secondary hover-effect" href="{% url 'election_report' %}">
+                            <i class="fas fa-file-alt"></i> Election Report
+                        </a>
+                        <!-- Constituency -->
+                        <a class="dropdown-item text-secondary hover-effect" href="{% url 'constituency_list' %}">
+                            <i class="fas fa-landmark"></i> Constituency
+                        </a>
+                        <!-- Logout -->
+                        <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger hover-effect" style="padding: 0;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -85,5 +78,14 @@
     .hover-effect:hover {
         color: #007bff !important; /* Bootstrap's primary color */
         transform: scale(1.1);
+    }
+
+    /* Dropdown customizations */
+    .dropdown-menu {
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .dropdown-item:hover {
+        background-color: #f8f9fa; /* Light gray on hover */
     }
 </style>

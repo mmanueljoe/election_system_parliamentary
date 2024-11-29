@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mt-5">
+    <h2 class="display-5 font-weight-bold">{{ title }}</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-8">
+                {{ form.as_p }}
+            </div>
+            <div class="col-md-4 text-center">
+                {% if party and party.logo %}
+                    <img src="{{ party.logo.url }}" alt="{{ party.name }} Logo" class="img-fluid rounded mb-3" style="max-height: 150px;">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'party_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

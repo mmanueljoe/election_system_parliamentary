@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{%include 'navbar.html'%}
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-danger text-white">
@@ -27,4 +27,5 @@
         return confirm("Are you absolutely sure you want to delete this polling station? This action cannot be undone.");
     }
 </script>
+{%include 'footer.html'%}
 {% endblock %}

@@ -42,6 +42,12 @@ urlpatterns = [
 
     # Election Report
     path('election_report/', views.election_report, name='election_report'),
+
+    # party management
+    path('parties/', views.party_list, name='party_list'),
+    path('parties/create/', views.party_create, name='party_create'),
+    path('parties/update/<int:party_id>/', views.party_update, name='party_update'),
+    path('parties/delete/<int:party_id>/', views.party_delete, name='party_delete'),
     
     # Authentication
     path('login/', views.login_view, name='login'),
