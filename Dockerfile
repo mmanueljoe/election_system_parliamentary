@@ -14,10 +14,11 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     default-libmysqlclient-dev \
     pkg-config \
-    && apt-get clean
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create a directory for the application
-WORKDIR /app
+WORKDIR /election_app
 
 # Create a virtual environment
 RUN python3 -m venv /opt/venv
@@ -28,7 +29,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Copy the requirements file
 COPY requirements.txt /app/
 
-# Install Python dependencies
+# Upgrade pip and install Python dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
