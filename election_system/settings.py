@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['election_system.145.223.85.248.sslip.io','145.223.85.248']
 
 
 # Application definition
@@ -93,9 +93,9 @@ DATABASES = {
         # for production
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME', 'election_system_db'),
-        'USER': os.getenv('DB_USER', 'root'),
+        'USER': os.getenv('DB_USER', 'mysql'),
         'PASSWORD': os.getenv('root', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'HOST': os.getenv('DB_HOST', 'mysql'),
         'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
