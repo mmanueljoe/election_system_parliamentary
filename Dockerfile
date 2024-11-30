@@ -1,11 +1,11 @@
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Set environment variables to improve performance
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Install system dependencies
+# Install system dependencies in one layer
 RUN apt-get update && apt-get install -y \
     python3-venv \
     build-essential \
@@ -17,27 +17,28 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a directory for the application
+# Create and set working directory for the app
 WORKDIR /election_app
 
-# Create a virtual environment
+# Create a virtual environment (venv) in the working directory
 RUN python3 -m venv /opt/venv
 
 # Activate the virtual environment and ensure it's on the PATH
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copy the requirements file
-COPY requirements.txt /app/
+# Copy only the requirements file first to leverage Docker's cache
+COPY requirements.txt /election_app/
 
-# Upgrade pip and install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Upgrade pip and install dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# Copy the application code
+# Copy the rest of the application code
 COPY . /election_app/
 
-# Expose the port the app runs on
+# Expose the port the app will run on
 EXPOSE 8000
 
-# Run the application
-CMD ["gunicorn", "election_system.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Command to run the app with Gunicorn (Django production server)
+CMD ["gunicorn", "election_system.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+
