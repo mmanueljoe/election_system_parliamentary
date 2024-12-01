@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['election_system.145.223.85.248.sslip.io','145.223.85.248']
+ALLOWED_HOSTS = ['145.223.85.248.sslip.io']
 
 
 # Application definition
