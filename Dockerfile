@@ -36,9 +36,11 @@ RUN pip install --upgrade pip && \
 # Copy the rest of the application code
 COPY . /election_app/
 
+# Collect static files during the build process
+RUN python manage.py collectstatic --noinput
+
 # Expose the port the app will run on
 EXPOSE 8000
 
 # Command to run the app with Gunicorn (Django production server)
 CMD ["gunicorn", "election_system.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
-
