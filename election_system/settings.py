@@ -96,7 +96,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'election_system_db'),
         'USER': os.getenv('DB_USER', 'mysql'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'root'),
-        'HOST': os.getenv('DB_HOST', '399e68601ad9'),
+        'HOST': os.getenv('DB_HOST', 'mysql-static'),
         'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
