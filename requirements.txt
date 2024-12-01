@@ -17,3 +17,4 @@ python-dotenv==1.0.1
 six==1.16.0
 sqlparse==0.5.2
 tzdata==2024.2
+whitenoise==6.8.2
