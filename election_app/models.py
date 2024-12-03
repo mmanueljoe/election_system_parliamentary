@@ -38,7 +38,7 @@ class Candidate(models.Model):
         return self.name
 
 class PollingStation(models.Model):
-    name = models.CharField(max_length=100)  # Add this field if you need a name for polling stations
+    name = models.CharField(max_length=100)  # name for polling stations
     code = models.CharField(max_length=50, unique=True)
     constituency = models.ForeignKey(Constituency, on_delete=models.CASCADE)
     registered_voters = models.IntegerField()
