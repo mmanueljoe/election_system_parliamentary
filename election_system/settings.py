@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['145.223.85.248.sslip.io']
+ALLOWED_HOSTS = ['parliamentaryrtc.site', 'www.parliamentaryrtc.site', '127.0.0.1', 'localhost','145.223.85.248']
 
 
 # Application definition
@@ -93,11 +93,11 @@ DATABASES = {
 
         # for production
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'election_system_db'),
+        'NAME': os.getenv('DB_NAME', 'election_system_pr'),
         'USER': os.getenv('DB_USER', 'mysql'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'root'),
-        'HOST': os.getenv('DB_HOST', 'mysql-static'),
-        'PORT': os.getenv('DB_PORT', '3306'),
+        'HOST': os.getenv('DB_HOST', 'mysql-static-pr'),
+        'PORT': os.getenv('DB_PORT', '3307'),
     }
 }
 
@@ -119,6 +119,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Allow your domain and subdomain
+CSRF_TRUSTED_ORIGINS = [
+    'https://parliamentaryrtc.site',
+    'https://www.parliamentaryrtc.site',
+]
+
 
 
 # Internationalization
