@@ -40,7 +40,7 @@ COPY . /election_app/
 RUN python manage.py collectstatic --noinput
 
 # Expose the port the app will run on
-EXPOSE 8000
+EXPOSE 4000
 
 # Command to run the app with Gunicorn (Django production server)
-CMD ["gunicorn", "election_system.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["gunicorn", "election_system.wsgi:application", "--bind", "0.0.0.0:4000", "--workers", "3"]
