@@ -41,10 +41,10 @@ class PollingStation(models.Model):
     name = models.CharField(max_length=100)  # name for polling stations
     code = models.CharField(max_length=50, unique=True)
     constituency = models.ForeignKey(Constituency, on_delete=models.CASCADE)
-    registered_voters = models.IntegerField()
-    rejected_ballots = models.IntegerField(default=0)
-    total_votes_cast = models.IntegerField(default=0, editable=False)
-    over_votes = models.IntegerField(default=0, editable=False)
+    registered_voters = models.PositiveIntegerField()
+    rejected_ballots = models.PositiveIntegerField(default=0)
+    total_votes_cast = models.PositiveIntegerField(default=0, editable=False)
+    over_votes = models.PositiveIntegerField(default=0, editable=False)
     declared = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -61,7 +61,7 @@ class PollingStation(models.Model):
 class Vote(models.Model):
     polling_station = models.ForeignKey(PollingStation, on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    votes = models.IntegerField()
+    votes = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
