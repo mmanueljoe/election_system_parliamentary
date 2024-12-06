@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'bootstrap5',
     'election_app',
+    'import_export',
 ]
 
 MIDDLEWARE = [
